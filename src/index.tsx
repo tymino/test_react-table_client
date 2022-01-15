@@ -2,11 +2,12 @@ import './sass/index.sass';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Table from './components/Table';
+
+import App from './App';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Table />
+    <App />
   </React.StrictMode>,
   document.getElementById('root'),
 );
