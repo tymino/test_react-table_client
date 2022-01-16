@@ -2,7 +2,17 @@ import Table from './Table/Table';
 
 import IData from '../types/data';
 
-const tableColName: string[] = ['Дата', 'Название', 'Количество', 'Расстояние'];
+export interface ITableColName {
+  name: string;
+  value: string;
+}
+
+const tableColName: ITableColName[] = [
+  { name: 'Дата', value: 'data' },
+  { name: 'Название', value: 'title' },
+  { name: 'Количество', value: 'amount' },
+  { name: 'Расстояние', value: 'distance' },
+];
 const tableData: IData[] = [
   { id: 0, date: '12-01-2022', title: 'Box', amount: 108, distance: 0.6 },
   { id: 7, date: '04-01-2022', title: 'Book', amount: 214, distance: 2.2 },
@@ -22,7 +32,6 @@ const tableData: IData[] = [
   { id: 3, date: '12-01-2022', title: 'Box', amount: 108, distance: 0.6 },
   { id: 4, date: '04-01-2022', title: 'Book', amount: 214, distance: 2.2 },
   { id: 5, date: '30-12-2021', title: 'Pan', amount: 340, distance: 1.1 },
-  
 ];
 
 const App = () => {

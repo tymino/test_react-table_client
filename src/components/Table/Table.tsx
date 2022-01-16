@@ -1,9 +1,10 @@
 import './style/table.sass';
-import React, { useEffect } from 'react';
+import React from 'react';
 import IData from '../../types/data';
+import { ITableColName } from '../App';
 
 interface ITableProps {
-  colName: string[];
+  colName: ITableColName[];
   list: IData[];
 }
 
@@ -13,13 +14,27 @@ interface IPagination {
   allPages: number;
 }
 
+enum Condition {
+  None = '---',
+  Equal = 'равно',
+  Contains = 'содержит',
+  More = 'больше',
+  Less = 'меньше',
+}
+
 const Table: React.FC<ITableProps> = ({ colName, list }) => {
   // local table data
   const [localTableData, setLocalTableData] = React.useState<IData[]>(list);
   const [actualTableData, setActualTableData] = React.useState<IData[]>([]);
 
-  const conditions: string[] = ['---', 'равно', 'содержит', 'больше', 'меньше'];
-  const [selectColumnName, setSelectColumnName] = React.useState<string>(colName[0]);
+  const conditions: string[] = [
+    Condition.None,
+    Condition.Equal,
+    Condition.Contains,
+    Condition.More,
+    Condition.Less,
+  ];
+  const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colName[1]);
 
   const [selectСondition, setSelectСondition] = React.useState<string | undefined>(conditions[0]);
   const [inputSearch, setInputSearch] = React.useState<string>('');
@@ -32,13 +47,31 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
     allPages: Math.ceil(localTableData.length / visibleItemsPerPage),
   });
 
+  const preparateTableData = () => {
+    let newList: IData[] = [];
+
+    if (Condition.Equal) {
+      newList = list.filter((item: any) => String(item[selectColumnName.value]) === inputSearch);
+      // setLocalTableData(newList);
+    }
+  };
+
   // handleFunc
   const handleSelectColumnName = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectColumnName(event.target.value);
+    const actualColName = colName.find((obj) => obj.value === event.target.value);
+
+    if (actualColName) setSelectColumnName(actualColName);
   };
 
   const handleSelectСondition = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectСondition(event.target.value);
+
+    if (Condition.None === event.target.value) {
+      setLocalTableData(list);
+      return;
+    }
+    
+    preparateTableData();
   };
 
   const handleInputSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,13 +94,9 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
     }
   };
 
-  const preparateTableData = () => {
-    
-  };
-
   // useEffetct
   React.useEffect(() => {
-    // preparateTableData();
+    preparateTableData();
   }, [list]);
 
   React.useEffect(() => {
@@ -83,9 +112,9 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
       {actualTableData.length > 0 && (
         <div className="table-component__navigation">
           <div className="navigation__filter-column">
-            <select value={selectColumnName} onChange={handleSelectColumnName}>
-              {colName.slice(1).map((name: string, index) => (
-                <option key={name + index} value={name}>
+            <select value={selectColumnName.value} onChange={handleSelectColumnName}>
+              {colName.slice(1).map(({ name, value }) => (
+                <option key={name} value={value}>
                   {name}
                 </option>
               ))}
@@ -130,9 +159,9 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
         <table className="table-component__table" cellSpacing="0">
           <thead className="table-component__thead">
             <tr className="table-component__tr">
-              {colName.map((title: string, index) => (
-                <th className="table-component__th" key={title + index}>
-                  {title}
+              {colName.map(({ name }, index) => (
+                <th className="table-component__th" key={name}>
+                  {name}
                 </th>
               ))}
             </tr>
