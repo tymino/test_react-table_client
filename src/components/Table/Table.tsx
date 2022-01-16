@@ -50,9 +50,9 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
   const preparateTableData = () => {
     let newList: IData[] = [];
 
-    if (Condition.Equal) {
+    if (selectСondition === Condition.Equal) {
       newList = list.filter((item: any) => String(item[selectColumnName.value]) === inputSearch);
-      // setLocalTableData(newList);
+      setLocalTableData(newList);
     }
   };
 
@@ -65,17 +65,11 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
 
   const handleSelectСondition = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectСondition(event.target.value);
-
-    if (Condition.None === event.target.value) {
-      setLocalTableData(list);
-      return;
-    }
-    
-    preparateTableData();
   };
 
   const handleInputSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputSearch(event.target.value);
+    setSelectСondition(conditions[0]);
   };
 
   const handleChangePaginationPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -96,8 +90,9 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
 
   // useEffetct
   React.useEffect(() => {
+    console.log('confition');
     preparateTableData();
-  }, [list]);
+  }, [selectСondition]);
 
   React.useEffect(() => {
     const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
