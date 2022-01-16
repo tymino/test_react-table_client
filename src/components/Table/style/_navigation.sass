@@ -1,0 +1,52 @@
+.navigation
+  &__filter-column
+    margin-right: 20px
+    & > select
+      padding: 4px 10px
+      cursor: pointer
+
+  &__filter-condition
+    margin-right: 20px
+
+    & > select
+      padding: 4px 10px
+      cursor: pointer
+
+  &__filter-search
+    & > input
+      padding: 4px 10px
+
+  &__pagination
+    display: flex
+    justify-content: flex-end
+    width: 100%
+
+    &-button
+      &-prev
+        margin-right: 10px
+      &-next
+        margin-left: 10px
+
+    & > button
+      padding: 4px 10px
+      background: none
+      border: 1px solid black
+      border-radius: 4px
+      box-sizing: content-box
+      text-transform: uppercase
+      font-weight: bold
+      cursor: pointer
+
+      &:disabled
+        border: 1px solid rgba(0, 0, 0, 0)
+        cursor: default
+
+        &:hover
+          background: none
+
+      &:hover
+        background: #f3f3f3
+
+    & > select
+      padding: 4px 10px
+      cursor: pointer
