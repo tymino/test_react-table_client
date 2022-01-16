@@ -1,17 +1,22 @@
+$borderMain: 2px solid purple
+  
 .table-component
   display: flex
-  margin-top: 20px
-  margin-left: 20px
-  margin-right: 20px
-  border-collapse: collapse
-  border-top: 2px solid purple
-  border-right: 2px solid purple
-  border-bottom: 1px solid purple
-  border-left: none
+  flex-direction: column
+  margin: 20px 20px 0 20px
+
+  &__navigation
+    display: flex
+    flex-direction: row
+    margin-bottom: 10px
 
   &__table
-    table-layout: fixed
     width: 100%
+    table-layout: fixed
+    border-collapse: collapse
+    border-top: $borderMain
+    border-right: $borderMain
+    border-bottom: $borderMain
 
   &__thead
     color: red
@@ -19,11 +24,13 @@
   // &__tr
   &__th
     padding: 10px
-    border-left: 2px solid purple
-    border-bottom: 2px solid purple
+    border-left: $borderMain
+    border-bottom: $borderMain
 
   // &__tbody
   &__td
     padding: 10px
-    border-left: 2px solid purple
+    border-left: $borderMain
     border-bottom: 1px solid gray
+
+@import navigation
