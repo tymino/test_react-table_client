@@ -2,6 +2,7 @@ import Table from './components/Table';
 
 import IData from './types/data';
 
+const tableColName: string[] = ['Дата', 'Название', 'Количество', 'Расстояние'];
 const tableData: IData[] = [
   { id: 0, date: '12-01-2022', title: 'Box', amount: 108, distance: 0.6 },
   { id: 1, date: '04-01-2022', title: 'Book', amount: 214, distance: 2.2 },
@@ -11,7 +12,7 @@ const tableData: IData[] = [
 const App = () => {
   return (
     <div className="app">
-      <Table data={tableData} />
+      <Table colName={tableColName} list={tableData} />
     </div>
   );
 };
