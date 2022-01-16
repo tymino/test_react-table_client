@@ -1,6 +1,6 @@
-import Table from './components/Table';
+import Table from './Table/Table';
 
-import IData from './types/data';
+import IData from '../types/data';
 
 const tableColName: string[] = ['Дата', 'Название', 'Количество', 'Расстояние'];
 const tableData: IData[] = [

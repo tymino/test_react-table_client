@@ -1,5 +1,6 @@
+import './table.sass';
 import React from 'react';
-import IData from '../types/data';
+import IData from '../../types/data';
 
 interface ITableProps {
   colName: string[];
