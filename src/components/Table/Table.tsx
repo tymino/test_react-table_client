@@ -47,14 +47,14 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
     allPages: Math.ceil(list.length / visibleItemsPerPage),
   });
 
-  const updateDataForPagination = (tableData: IData[]) => {
-    const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
-    const startPage =
-      pagination.visibleItemsPerPage * pagination.currentPage - pagination.visibleItemsPerPage;
-    const localData = tableData.slice(startPage, endPage);
+  // const updateDataForPagination = (tableData: IData[]) => {
+  //   const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
+  //   const startPage =
+  //     pagination.visibleItemsPerPage * pagination.currentPage - pagination.visibleItemsPerPage;
+  //   const localData = tableData.slice(startPage, endPage);
 
-    setActualTableData(localData);
-  };
+  //   setActualTableData(localData);
+  // };
 
   const filteredTableData = () => {
     let newList: IData[] = [];
@@ -68,7 +68,7 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
           currentPage: 1,
           allPages: Math.ceil(newList.length / visibleItemsPerPage),
         });
-        updateDataForPagination(newList);
+        // updateDataForPagination(newList);
         return;
       }
 
@@ -78,7 +78,12 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
           return searchReg.test(item[selectColumnName.value]);
         });
         setLocalTableData(newList);
-        updateDataForPagination(newList);
+        setPagination({
+          ...pagination,
+          currentPage: 1,
+          allPages: Math.ceil(newList.length / visibleItemsPerPage),
+        });
+        // updateDataForPagination(newList);
         return;
       }
 
@@ -89,7 +94,7 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
           currentPage: 1,
           allPages: Math.ceil(list.length / visibleItemsPerPage),
         });
-        updateDataForPagination(list);
+        // updateDataForPagination(list);
         return;
       }
     }
@@ -130,15 +135,18 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
   // useEffetct
   React.useEffect(() => {
     filteredTableData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectСondition]);
 
-  // updatepagination
-  // React.useEffect(() => {
-  //   updateDataForPagination(localTableData);
-  // }, [pagination.currentPage]);
+  // update pagination
   React.useEffect(() => {
-    updateDataForPagination(localTableData);
-  }, [pagination.currentPage]);
+    const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
+    const startPage =
+      pagination.visibleItemsPerPage * pagination.currentPage - pagination.visibleItemsPerPage;
+    const localData = localTableData.slice(startPage, endPage);
+
+    setActualTableData(localData);
+  }, [localTableData, pagination]);
 
   return (
     <div className="table-component">
