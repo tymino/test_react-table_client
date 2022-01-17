@@ -36,7 +36,7 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
   ];
   const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colName[1]);
 
-  const [selectСondition, setSelectСondition] = React.useState<string | undefined>(conditions[0]);
+  const [selectСondition, setSelectСondition] = React.useState<string>(conditions[0]);
   const [inputSearch, setInputSearch] = React.useState<string>('');
 
   // pagination
@@ -44,15 +44,54 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
   const [pagination, setPagination] = React.useState<IPagination>({
     currentPage: 1,
     visibleItemsPerPage,
-    allPages: Math.ceil(localTableData.length / visibleItemsPerPage),
+    allPages: Math.ceil(list.length / visibleItemsPerPage),
   });
 
-  const preparateTableData = () => {
+  const updateDataForPagination = (tableData: IData[]) => {
+    const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
+    const startPage =
+      pagination.visibleItemsPerPage * pagination.currentPage - pagination.visibleItemsPerPage;
+    const localData = tableData.slice(startPage, endPage);
+
+    setActualTableData(localData);
+  };
+
+  const filteredTableData = () => {
     let newList: IData[] = [];
 
-    if (selectСondition === Condition.Equal) {
-      newList = list.filter((item: any) => String(item[selectColumnName.value]) === inputSearch);
-      setLocalTableData(newList);
+    switch (selectСondition) {
+      case Condition.Equal: {
+        newList = list.filter((item: any) => String(item[selectColumnName.value]) === inputSearch);
+        setLocalTableData(newList);
+        setPagination({
+          ...pagination,
+          currentPage: 1,
+          allPages: Math.ceil(newList.length / visibleItemsPerPage),
+        });
+        updateDataForPagination(newList);
+        return;
+      }
+
+      case Condition.Contains: {
+        newList = list.filter((item: any) => {
+          const searchReg = new RegExp(inputSearch);
+          return searchReg.test(item[selectColumnName.value]);
+        });
+        setLocalTableData(newList);
+        updateDataForPagination(newList);
+        return;
+      }
+
+      default: {
+        setLocalTableData(list);
+        setPagination({
+          ...pagination,
+          currentPage: 1,
+          allPages: Math.ceil(list.length / visibleItemsPerPage),
+        });
+        updateDataForPagination(list);
+        return;
+      }
     }
   };
 
@@ -90,66 +129,63 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
 
   // useEffetct
   React.useEffect(() => {
-    console.log('confition');
-    preparateTableData();
+    filteredTableData();
   }, [selectСondition]);
 
+  // updatepagination
+  // React.useEffect(() => {
+  //   updateDataForPagination(localTableData);
+  // }, [pagination.currentPage]);
   React.useEffect(() => {
-    const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
-    const startPage =
-      pagination.visibleItemsPerPage * pagination.currentPage - pagination.visibleItemsPerPage;
-
-    setActualTableData(localTableData.slice(startPage, endPage));
-  }, [localTableData, pagination]);
+    updateDataForPagination(localTableData);
+  }, [pagination.currentPage]);
 
   return (
     <div className="table-component">
-      {actualTableData.length > 0 && (
-        <div className="table-component__navigation">
-          <div className="navigation__filter-column">
-            <select value={selectColumnName.value} onChange={handleSelectColumnName}>
-              {colName.slice(1).map(({ name, value }) => (
-                <option key={name} value={value}>
-                  {name}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="navigation__filter-condition">
-            <select value={selectСondition} onChange={handleSelectСondition}>
-              {conditions.map((condition: string, index) => (
-                <option key={condition + index} value={condition}>
-                  {condition}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="navigation__filter-search">
-            <input type="text" value={inputSearch} onChange={handleInputSearch} />
-          </div>
-          <div className="navigation__pagination">
-            <button
-              className="navigation__pagination-button-prev"
-              onClick={handleClickButtonPrev}
-              disabled={pagination.currentPage <= 1 ? true : false}>
-              Prev
-            </button>
-            <select value={pagination.currentPage} onChange={handleChangePaginationPage}>
-              {Array(pagination.allPages)
-                .fill(0)
-                .map((_, index) => (
-                  <option key={index}>{index + 1}</option>
-                ))}
-            </select>
-            <button
-              className="navigation__pagination-button-next"
-              onClick={handleClickButtonNext}
-              disabled={pagination.currentPage >= pagination.allPages ? true : false}>
-              Next
-            </button>
-          </div>
+      <div className="table-component__navigation">
+        <div className="navigation__filter-column">
+          <select value={selectColumnName.value} onChange={handleSelectColumnName}>
+            {colName.slice(1).map(({ name, value }) => (
+              <option key={name} value={value}>
+                {name}
+              </option>
+            ))}
+          </select>
         </div>
-      )}
+        <div className="navigation__filter-search">
+          <input type="text" value={inputSearch} onChange={handleInputSearch} />
+        </div>
+        <div className="navigation__filter-condition">
+          <select value={selectСondition} onChange={handleSelectСondition}>
+            {conditions.map((condition: string, index) => (
+              <option key={condition + index} value={condition}>
+                {condition}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="navigation__pagination">
+          <button
+            className="navigation__pagination-button-prev"
+            onClick={handleClickButtonPrev}
+            disabled={pagination.currentPage <= 1 ? true : false}>
+            Prev
+          </button>
+          <select value={pagination.currentPage} onChange={handleChangePaginationPage}>
+            {Array(pagination.allPages)
+              .fill(0)
+              .map((_, index) => (
+                <option key={index}>{index + 1}</option>
+              ))}
+          </select>
+          <button
+            className="navigation__pagination-button-next"
+            onClick={handleClickButtonNext}
+            disabled={pagination.currentPage >= pagination.allPages ? true : false}>
+            Next
+          </button>
+        </div>
+      </div>
       {actualTableData.length > 0 && (
         <table className="table-component__table" cellSpacing="0">
           <thead className="table-component__thead">
