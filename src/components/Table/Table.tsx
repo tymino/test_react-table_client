@@ -36,13 +36,12 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
   const [localTableData, setLocalTableData] = React.useState<IData[]>(list);
   const [actualTableData, setActualTableData] = React.useState<IData[]>([]);
 
-  
   const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colName[1]);
   const [inputSearch, setInputSearch] = React.useState<string>('');
   const [selectСondition, setSelectСondition] = React.useState<string>(conditions[0]);
 
   // pagination
-  const [visibleItemsPerPage, setVisibleItemsPerPage] = React.useState<number>(7);
+  const [visibleItemsPerPage] = React.useState<number>(7);
   const [pagination, setPagination] = React.useState<IPagination>({
     currentPage: 1,
     visibleItemsPerPage,
@@ -58,10 +57,10 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
   //   setActualTableData(localData);
   // };
 
-  const filteredTableData = () => {
+  const filteredTableData = (actualCondition: string) => {
     let newList: IData[] = [];
 
-    switch (selectСondition) {
+    switch (actualCondition) {
       case Condition.Equal: {
         newList = list.filter((item: any) => String(item[selectColumnName.value]) === inputSearch);
         setLocalTableData(newList);
@@ -115,6 +114,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
     const actualColName = colName.find((obj) => obj.value === event.target.value);
 
     if (actualColName) {
+      filteredTableData(conditions[0]);
       setSelectColumnName(actualColName);
       setInputSearch('');
       setSelectСondition(conditions[0]);
@@ -122,12 +122,19 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
   };
 
   const handleSelectСondition = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    filteredTableData(event.target.value);
     setSelectСondition(event.target.value);
   };
 
   const handleInputSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setInputSearch(event.target.value);
     setSelectСondition(conditions[0]);
+    filteredTableData(conditions[0]);
+  };
+  const handleClickSearchClear = () => {
+    filteredTableData(conditions[0]);
+    setSelectСondition(conditions[0]);
+    setInputSearch('');
   };
 
   const handleChangePaginationPage = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -146,12 +153,6 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
     }
   };
 
-  // useEffetct
-  React.useEffect(() => {
-    filteredTableData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectСondition]);
-
   // update pagination
   React.useEffect(() => {
     const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
@@ -164,7 +165,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
 
   return (
     <div className="table-component">
-      <h2 className='table-component__title'>{title}</h2>
+      <h2 className="table-component__title">{title}</h2>
       <div className="table-component__navigation">
         <div className="navigation__filter-column">
           <select value={selectColumnName.value} onChange={handleSelectColumnName}>
@@ -177,6 +178,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
         </div>
         <div className="navigation__filter-search">
           <input type="text" value={inputSearch} onChange={handleInputSearch} />
+          <button onClick={handleClickSearchClear}></button>
         </div>
         <div className="navigation__filter-condition">
           <select value={selectСondition} onChange={handleSelectСondition}>
@@ -209,17 +211,17 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
           </button>
         </div>
       </div>
-      {actualTableData.length > 0 && (
-        <table className="table-component__table" cellSpacing="0">
-          <thead className="table-component__thead">
-            <tr className="table-component__tr">
-              {colName.map(({ name }, index) => (
-                <th className="table-component__th" key={name}>
-                  {name}
-                </th>
-              ))}
-            </tr>
-          </thead>
+      <table className="table-component__table" cellSpacing="0">
+        <thead className="table-component__thead">
+          <tr className="table-component__tr">
+            {colName.map(({ name }, index) => (
+              <th className="table-component__th" key={name}>
+                {name}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        {actualTableData.length > 0 && (
           <tbody className="table-component__tbody">
             {actualTableData.map((item: IData) => (
               <tr className="table-component__tr" key={item.id}>
@@ -235,8 +237,8 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
               </tr>
             ))}
           </tbody>
-        </table>
-      )}
+        )}
+      </table>
     </div>
   );
 };
