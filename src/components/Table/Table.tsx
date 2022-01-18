@@ -24,10 +24,6 @@ enum Condition {
 }
 
 const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
-  // local table data
-  const [localTableData, setLocalTableData] = React.useState<IData[]>(list);
-  const [actualTableData, setActualTableData] = React.useState<IData[]>([]);
-
   const conditions: string[] = [
     Condition.None,
     Condition.Equal,
@@ -35,13 +31,18 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
     Condition.More,
     Condition.Less,
   ];
-  const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colName[1]);
 
-  const [selectСondition, setSelectСondition] = React.useState<string>(conditions[0]);
+  // local table data
+  const [localTableData, setLocalTableData] = React.useState<IData[]>(list);
+  const [actualTableData, setActualTableData] = React.useState<IData[]>([]);
+
+  
+  const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colName[1]);
   const [inputSearch, setInputSearch] = React.useState<string>('');
+  const [selectСondition, setSelectСondition] = React.useState<string>(conditions[0]);
 
   // pagination
-  const [visibleItemsPerPage, setVisibleItemsPerPage] = React.useState<number>(3);
+  const [visibleItemsPerPage, setVisibleItemsPerPage] = React.useState<number>(7);
   const [pagination, setPagination] = React.useState<IPagination>({
     currentPage: 1,
     visibleItemsPerPage,
@@ -113,7 +114,11 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
   const handleSelectColumnName = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const actualColName = colName.find((obj) => obj.value === event.target.value);
 
-    if (actualColName) setSelectColumnName(actualColName);
+    if (actualColName) {
+      setSelectColumnName(actualColName);
+      setInputSearch('');
+      setSelectСondition(conditions[0]);
+    }
   };
 
   const handleSelectСondition = (event: React.ChangeEvent<HTMLSelectElement>) => {
