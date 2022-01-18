@@ -36,7 +36,7 @@
         width: 14px
         height: 2px
         transform: rotate(45deg)
-        background: black
+        background: gray
       &::before
         content: ''
         position: absolute
@@ -45,7 +45,7 @@
         width: 14px
         height: 2px
         transform: rotate(-45deg)
-        background: black
+        background: gray
 
       &:disabled
         border: 1px solid rgba(0, 0, 0, 0)
@@ -55,7 +55,8 @@
           background: none
 
       &:hover
-        background: #f3f3f3
+        &::after, &::before
+          background: black
 
   &__filter-condition
     & > select
