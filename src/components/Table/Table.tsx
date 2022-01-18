@@ -4,6 +4,7 @@ import IData from '../../types/data';
 import { ITableColName } from '../App';
 
 interface ITableProps {
+  title: string;
   colName: ITableColName[];
   list: IData[];
 }
@@ -22,7 +23,7 @@ enum Condition {
   Less = 'меньше',
 }
 
-const Table: React.FC<ITableProps> = ({ colName, list }) => {
+const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
   // local table data
   const [localTableData, setLocalTableData] = React.useState<IData[]>(list);
   const [actualTableData, setActualTableData] = React.useState<IData[]>([]);
@@ -87,6 +88,14 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
         return;
       }
 
+      case Condition.More: {
+        return;
+      }
+
+      case Condition.Less: {
+        return;
+      }
+
       default: {
         setLocalTableData(list);
         setPagination({
@@ -135,7 +144,7 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
   // useEffetct
   React.useEffect(() => {
     filteredTableData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectСondition]);
 
   // update pagination
@@ -150,6 +159,7 @@ const Table: React.FC<ITableProps> = ({ colName, list }) => {
 
   return (
     <div className="table-component">
+      <h2 className='table-component__title'>{title}</h2>
       <div className="table-component__navigation">
         <div className="navigation__filter-column">
           <select value={selectColumnName.value} onChange={handleSelectColumnName}>

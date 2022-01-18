@@ -37,7 +37,7 @@ const tableData: IData[] = [
 const App = () => {
   return (
     <div className="app">
-      <Table colName={tableColName} list={tableData} />
+      <Table title='Таблица' colName={tableColName} list={tableData} />
     </div>
   );
 };
