@@ -5,13 +5,15 @@ import IData from '../types/data';
 export interface ITableColName {
   name: string;
   value: string;
+  isSorted: boolean;
+  isFiltered: boolean;
 }
 
 const tableColName: ITableColName[] = [
-  { name: 'Дата', value: 'data' },
-  { name: 'Название', value: 'title' },
-  { name: 'Количество, шт', value: 'amount' },
-  { name: 'Расстояние, км', value: 'distance' },
+  { name: 'Дата', value: 'data', isSorted: false, isFiltered: false },
+  { name: 'Название', value: 'title', isSorted: true, isFiltered: true },
+  { name: 'Количество, шт', value: 'amount', isSorted: true, isFiltered: true },
+  { name: 'Расстояние, км', value: 'distance', isSorted: true, isFiltered: true },
 ];
 const tableData: IData[] = [
   { id: 0, date: '12-01-2022', title: 'Box', amount: 108, distance: 0.6 },
@@ -37,7 +39,7 @@ const tableData: IData[] = [
 const App = () => {
   return (
     <div className="app">
-      <Table title='Таблица' colName={tableColName} list={tableData} />
+      <Table title="Таблица" colName={tableColName} list={tableData} />
     </div>
   );
 };

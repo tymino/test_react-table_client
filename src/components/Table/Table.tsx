@@ -110,7 +110,6 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
           currentPage: 1,
           allPages: Math.ceil(list.length / visibleItemsPerPage),
         });
-        // updateDataForPagination(list);
         return;
       }
     }
@@ -176,11 +175,13 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       <div className="table-component__navigation">
         <div className="navigation__filter-column">
           <select value={selectColumnName.value} onChange={handleSelectColumnName}>
-            {colName.slice(1).map(({ name, value }) => (
-              <option key={name} value={value}>
-                {name}
-              </option>
-            ))}
+            {colName.map(({ name, value, isFiltered }) => {
+              return isFiltered ? (
+                <option key={name} value={value}>
+                  {name}
+                </option>
+              ) : null;
+            })}
           </select>
         </div>
         <div className="navigation__filter-search">
