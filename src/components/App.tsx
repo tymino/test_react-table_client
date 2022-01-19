@@ -10,8 +10,8 @@ export interface ITableColName {
 const tableColName: ITableColName[] = [
   { name: 'Дата', value: 'data' },
   { name: 'Название', value: 'title' },
-  { name: 'Количество', value: 'amount' },
-  { name: 'Расстояние', value: 'distance' },
+  { name: 'Количество, шт', value: 'amount' },
+  { name: 'Расстояние, км', value: 'distance' },
 ];
 const tableData: IData[] = [
   { id: 0, date: '12-01-2022', title: 'Box', amount: 108, distance: 0.6 },

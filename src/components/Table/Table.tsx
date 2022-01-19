@@ -48,35 +48,25 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
     allPages: Math.ceil(list.length / visibleItemsPerPage),
   });
 
-  // const updateDataForPagination = (tableData: IData[]) => {
-  //   const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
-  //   const startPage =
-  //     pagination.visibleItemsPerPage * pagination.currentPage - pagination.visibleItemsPerPage;
-  //   const localData = tableData.slice(startPage, endPage);
-
-  //   setActualTableData(localData);
-  // };
-
   const filteredTableData = (actualCondition: string) => {
     let newList: IData[] = [];
 
     switch (actualCondition) {
       case Condition.Equal: {
-        newList = list.filter((item: any) => String(item[selectColumnName.value]) === inputSearch);
+        newList = list.filter((item: IData) => String(item[selectColumnName.value]) === inputSearch);
         setLocalTableData(newList);
         setPagination({
           ...pagination,
           currentPage: 1,
           allPages: Math.ceil(newList.length / visibleItemsPerPage),
         });
-        // updateDataForPagination(newList);
         return;
       }
 
       case Condition.Contains: {
-        newList = list.filter((item: any) => {
+        newList = list.filter((item: IData) => {
           const searchReg = new RegExp(inputSearch);
-          return searchReg.test(item[selectColumnName.value]);
+          return searchReg.test(String(item[selectColumnName.value]));
         });
         setLocalTableData(newList);
         setPagination({
@@ -84,15 +74,32 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
           currentPage: 1,
           allPages: Math.ceil(newList.length / visibleItemsPerPage),
         });
-        // updateDataForPagination(newList);
         return;
       }
 
       case Condition.More: {
+        newList = list.filter((item: IData) => {
+          return item[selectColumnName.value] > Number(inputSearch);
+        });
+        setLocalTableData(newList);
+        setPagination({
+          ...pagination,
+          currentPage: 1,
+          allPages: Math.ceil(newList.length / visibleItemsPerPage),
+        });
         return;
       }
 
       case Condition.Less: {
+        newList = list.filter((item: IData) => {
+          return item[selectColumnName.value] < Number(inputSearch);
+        });
+        setLocalTableData(newList);
+        setPagination({
+          ...pagination,
+          currentPage: 1,
+          allPages: Math.ceil(newList.length / visibleItemsPerPage),
+        });
         return;
       }
 
@@ -225,7 +232,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
           <tbody className="table-component__tbody">
             {actualTableData.map((item: IData) => (
               <tr className="table-component__tr" key={item.id}>
-                {(Object.keys(item) as Array<keyof typeof item>).map((value, index) => {
+                {Object.keys(item).map((value, index) => {
                   if (/id/gi.test(value)) return null;
 
                   return (
