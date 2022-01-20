@@ -166,7 +166,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
     }
   };
 
-  const handleSortedCurrentCol = (event: React.MouseEvent<HTMLDivElement>) => {
+  const handleClickColumnName = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.currentTarget.title;
 
     const updateColumns = columnName.map((col) => {
@@ -181,7 +181,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
             return { ...col, sortedStatus: SortedName.Increase };
         }
       }
-      return col;
+      return { ...col, sortedStatus: SortedName.None };
     });
 
     setColumnName(updateColumns);
@@ -255,7 +255,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
                 <th
                   className="table-component__th table-component__th--clickable"
                   key={name}
-                  onClick={handleSortedCurrentCol}
+                  onClick={handleClickColumnName}
                   title={name}>
                   {name}
                 </th>
