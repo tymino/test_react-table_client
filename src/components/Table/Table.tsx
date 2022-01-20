@@ -5,8 +5,8 @@ import { ITableColName } from '../App';
 
 interface ITableProps {
   title: string;
-  colName: ITableColName[];
-  list: IData[];
+  colNameData: ITableColName[];
+  listData: IData[];
 }
 
 interface IPagination {
@@ -22,8 +22,13 @@ enum Condition {
   More = 'больше',
   Less = 'меньше',
 }
+enum SortedName {
+  None = 'none',
+  Increase = 'increase',
+  Decrease = 'decrease',
+}
 
-const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
+const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
   const conditions: string[] = [
     Condition.None,
     Condition.Equal,
@@ -31,12 +36,14 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
     Condition.More,
     Condition.Less,
   ];
+  const sortedStatusName: string[] = [SortedName.None, SortedName.Increase, SortedName.Decrease];
 
+  const [columnName, setColumnName] = React.useState<ITableColName[]>(colNameData);
   // local table data
-  const [localTableData, setLocalTableData] = React.useState<IData[]>(list);
+  const [localTableData, setLocalTableData] = React.useState<IData[]>(listData);
   const [actualTableData, setActualTableData] = React.useState<IData[]>([]);
 
-  const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colName[1]);
+  const [selectColumnName, setSelectColumnName] = React.useState<ITableColName>(colNameData[1]);
   const [inputSearch, setInputSearch] = React.useState<string>('');
   const [selectСondition, setSelectСondition] = React.useState<string>(conditions[0]);
 
@@ -45,7 +52,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
   const [pagination, setPagination] = React.useState<IPagination>({
     currentPage: 1,
     visibleItemsPerPage,
-    allPages: Math.ceil(list.length / visibleItemsPerPage),
+    allPages: Math.ceil(listData.length / visibleItemsPerPage),
   });
 
   const filteredTableData = (actualCondition: string) => {
@@ -53,7 +60,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
 
     switch (actualCondition) {
       case Condition.Equal: {
-        newList = list.filter((item: IData) => String(item[selectColumnName.value]) === inputSearch);
+        newList = listData.filter((item: IData) => String(item[selectColumnName.value]) === inputSearch);
         setLocalTableData(newList);
         setPagination({
           ...pagination,
@@ -64,7 +71,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       }
 
       case Condition.Contains: {
-        newList = list.filter((item: IData) => {
+        newList = listData.filter((item: IData) => {
           const searchReg = new RegExp(inputSearch);
           return searchReg.test(String(item[selectColumnName.value]));
         });
@@ -78,7 +85,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       }
 
       case Condition.More: {
-        newList = list.filter((item: IData) => {
+        newList = listData.filter((item: IData) => {
           return item[selectColumnName.value] > Number(inputSearch);
         });
         setLocalTableData(newList);
@@ -91,7 +98,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       }
 
       case Condition.Less: {
-        newList = list.filter((item: IData) => {
+        newList = listData.filter((item: IData) => {
           return item[selectColumnName.value] < Number(inputSearch);
         });
         setLocalTableData(newList);
@@ -104,11 +111,11 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       }
 
       default: {
-        setLocalTableData(list);
+        setLocalTableData(listData);
         setPagination({
           ...pagination,
           currentPage: 1,
-          allPages: Math.ceil(list.length / visibleItemsPerPage),
+          allPages: Math.ceil(listData.length / visibleItemsPerPage),
         });
         return;
       }
@@ -117,7 +124,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
 
   // handleFunc
   const handleSelectColumnName = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const actualColName = colName.find((obj) => obj.value === event.target.value);
+    const actualColName = columnName.find((obj) => obj.value === event.target.value);
 
     if (actualColName) {
       filteredTableData(conditions[0]);
@@ -159,6 +166,27 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
     }
   };
 
+  const handleSortedCurrentCol = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.currentTarget.title;
+
+    const updateColumns = columnName.map((col) => {
+      if (col.name === target) {
+        switch (col.sortedStatus) {
+          case SortedName.Increase:
+            return { ...col, sortedStatus: SortedName.Decrease };
+          case SortedName.Decrease:
+            return { ...col, sortedStatus: SortedName.Increase };
+
+          default:
+            return { ...col, sortedStatus: SortedName.Increase };
+        }
+      }
+      return col;
+    });
+
+    setColumnName(updateColumns);
+  };
+
   // update pagination
   React.useEffect(() => {
     const endPage = pagination.visibleItemsPerPage * pagination.currentPage;
@@ -175,7 +203,7 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       <div className="table-component__navigation">
         <div className="navigation__filter-column">
           <select value={selectColumnName.value} onChange={handleSelectColumnName}>
-            {colName.map(({ name, value, isFiltered }) => {
+            {columnName.map(({ name, value, isFiltered }) => {
               return isFiltered ? (
                 <option key={name} value={value}>
                   {name}
@@ -222,11 +250,21 @@ const Table: React.FC<ITableProps> = ({ title, colName, list }) => {
       <table className="table-component__table" cellSpacing="0">
         <thead className="table-component__thead">
           <tr className="table-component__tr">
-            {colName.map(({ name }, index) => (
-              <th className="table-component__th" key={name}>
-                {name}
-              </th>
-            ))}
+            {columnName.map(({ name, isSorted }) => {
+              return isSorted ? (
+                <th
+                  className="table-component__th table-component__th--clickable"
+                  key={name}
+                  onClick={handleSortedCurrentCol}
+                  title={name}>
+                  {name}
+                </th>
+              ) : (
+                <th className="table-component__th" key={name}>
+                  {name}
+                </th>
+              );
+            })}
           </tr>
         </thead>
         {actualTableData.length > 0 && (

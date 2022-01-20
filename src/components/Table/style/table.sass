@@ -32,6 +32,16 @@ $borderMain: 2px solid purple
     border-left: $borderMain
     border-bottom: $borderMain
 
+    &--clickable
+      cursor: pointer
+      user-select: none
+
+      &:hover
+        color: rgba(red, .7)
+
+      &:active
+        color: blue
+
   // &__tbody
   &__td
     padding: 10px
