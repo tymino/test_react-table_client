@@ -4,17 +4,17 @@ import IData from '../types/data';
 
 export interface ITableColName {
   name: string;
-  value: string;
+  key: string;
   isSorted: boolean;
   sortedStatus: string;
   isFiltered: boolean;
 }
 
 const tableColName: ITableColName[] = [
-  { name: 'Дата', value: 'data', isSorted: false, sortedStatus: 'none', isFiltered: false },
-  { name: 'Название', value: 'title', isSorted: true, sortedStatus: 'none', isFiltered: true },
-  { name: 'Количество, шт', value: 'amount', isSorted: true, sortedStatus: 'none', isFiltered: true },
-  { name: 'Расстояние, км', value: 'distance', isSorted: true, sortedStatus: 'none', isFiltered: true },
+  { name: 'Дата', key: 'data', isSorted: false, sortedStatus: 'none', isFiltered: false },
+  { name: 'Название', key: 'title', isSorted: true, sortedStatus: 'none', isFiltered: true },
+  { name: 'Количество, шт', key: 'amount', isSorted: true, sortedStatus: 'none', isFiltered: true },
+  { name: 'Расстояние, км', key: 'distance', isSorted: true, sortedStatus: 'none', isFiltered: true },
 ];
 const tableData: IData[] = [
   { id: 0, date: '12-01-2022', title: 'Box', amount: 108, distance: 0.6 },

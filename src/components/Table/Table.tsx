@@ -36,7 +36,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
     Condition.More,
     Condition.Less,
   ];
-  const sortedStatusName: string[] = [SortedName.None, SortedName.Increase, SortedName.Decrease];
+  // const sortedStatusName: string[] = [SortedName.None, SortedName.Increase, SortedName.Decrease];
 
   const [columnName, setColumnName] = React.useState<ITableColName[]>(colNameData);
   // local table data
@@ -60,7 +60,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
 
     switch (actualCondition) {
       case Condition.Equal: {
-        newList = listData.filter((item: IData) => String(item[selectColumnName.value]) === inputSearch);
+        newList = listData.filter((item: IData) => String(item[selectColumnName.key]) === inputSearch);
         setLocalTableData(newList);
         setPagination({
           ...pagination,
@@ -73,7 +73,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
       case Condition.Contains: {
         newList = listData.filter((item: IData) => {
           const searchReg = new RegExp(inputSearch);
-          return searchReg.test(String(item[selectColumnName.value]));
+          return searchReg.test(String(item[selectColumnName.key]));
         });
         setLocalTableData(newList);
         setPagination({
@@ -86,7 +86,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
 
       case Condition.More: {
         newList = listData.filter((item: IData) => {
-          return item[selectColumnName.value] > Number(inputSearch);
+          return item[selectColumnName.key] > Number(inputSearch);
         });
         setLocalTableData(newList);
         setPagination({
@@ -99,7 +99,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
 
       case Condition.Less: {
         newList = listData.filter((item: IData) => {
-          return item[selectColumnName.value] < Number(inputSearch);
+          return item[selectColumnName.key] < Number(inputSearch);
         });
         setLocalTableData(newList);
         setPagination({
@@ -122,9 +122,48 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
     }
   };
 
+  const sortedColumnData = (column: string, sortedType: string) => {
+    const typeData: string = typeof localTableData[0][column];
+    let newSortedTableData: IData[] = localTableData;
+
+    if (typeData === 'string') {
+      newSortedTableData.sort((a: IData, b: IData) => {
+        const nameA = (a[column] as string).toLowerCase();
+        const nameB = (b[column] as string).toLowerCase();
+
+        if (sortedType === SortedName.Increase) {
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+        }
+        if (sortedType === SortedName.Decrease) {
+          if (nameA < nameB) return 1;
+          if (nameA > nameB) return -1;
+        }
+        return 0;
+      });
+    }
+
+    if (typeData === 'number') {
+      if (sortedType === SortedName.Increase) {
+        newSortedTableData.sort((a: IData, b: IData) => +a[column] - +b[column]);
+      }
+      if (sortedType === SortedName.Decrease) {
+        newSortedTableData.sort((a: IData, b: IData) => +b[column] - +a[column]);
+      }
+    }
+
+    setLocalTableData(newSortedTableData);
+    setPagination({
+      ...pagination,
+      currentPage: 1,
+      allPages: Math.ceil(newSortedTableData.length / visibleItemsPerPage),
+    });
+    return;
+  };
+
   // handleFunc
   const handleSelectColumnName = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    const actualColName = columnName.find((obj) => obj.value === event.target.value);
+    const actualColName = columnName.find((obj) => obj.key === event.target.value);
 
     if (actualColName) {
       filteredTableData(conditions[0]);
@@ -173,11 +212,14 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
       if (col.name === target) {
         switch (col.sortedStatus) {
           case SortedName.Increase:
+            sortedColumnData(col.key, SortedName.Decrease);
             return { ...col, sortedStatus: SortedName.Decrease };
           case SortedName.Decrease:
+            sortedColumnData(col.key, SortedName.Increase);
             return { ...col, sortedStatus: SortedName.Increase };
 
           default:
+            sortedColumnData(col.key, SortedName.Increase);
             return { ...col, sortedStatus: SortedName.Increase };
         }
       }
@@ -202,10 +244,10 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
       <h2 className="table-component__title">{title}</h2>
       <div className="table-component__navigation">
         <div className="navigation__filter-column">
-          <select value={selectColumnName.value} onChange={handleSelectColumnName}>
-            {columnName.map(({ name, value, isFiltered }) => {
+          <select value={selectColumnName.key} onChange={handleSelectColumnName}>
+            {columnName.map(({ name, key, isFiltered }) => {
               return isFiltered ? (
-                <option key={name} value={value}>
+                <option key={name} value={key}>
                   {name}
                 </option>
               ) : null;
@@ -230,7 +272,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
             className="navigation__pagination-button-prev"
             onClick={handleClickButtonPrev}
             disabled={pagination.currentPage <= 1 ? true : false}>
-            Prev
+            назад
           </button>
           <select value={pagination.currentPage} onChange={handleChangePaginationPage}>
             {Array(pagination.allPages)
@@ -243,14 +285,14 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
             className="navigation__pagination-button-next"
             onClick={handleClickButtonNext}
             disabled={pagination.currentPage >= pagination.allPages ? true : false}>
-            Next
+            далее
           </button>
         </div>
       </div>
       <table className="table-component__table" cellSpacing="0">
         <thead className="table-component__thead">
           <tr className="table-component__tr">
-            {columnName.map(({ name, isSorted }) => {
+            {columnName.map(({ name, isSorted, sortedStatus }) => {
               return isSorted ? (
                 <th
                   className="table-component__th table-component__th--clickable"
@@ -258,6 +300,11 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
                   onClick={handleClickColumnName}
                   title={name}>
                   {name}
+                  {sortedStatus === SortedName.Increase ? (
+                    <div className="table-component__th--sort-increase" />
+                  ) : sortedStatus === SortedName.Decrease ? (
+                    <div className="table-component__th--sort-decrease" />
+                  ) : null}
                 </th>
               ) : (
                 <th className="table-component__th" key={name}>

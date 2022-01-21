@@ -1,5 +1,14 @@
 $borderMain: 2px solid purple
   
+%sort-custom-icon
+  content: ''
+  position: absolute
+  top: 50%
+  right: 2%
+  transform: translate(-50%, -50%)
+  border-left: 6px solid transparent
+  border-right: 6px solid transparent
+
 .table-component
   display: flex
   flex-direction: column
@@ -28,6 +37,7 @@ $borderMain: 2px solid purple
 
   // &__tr
   &__th
+    position: relative
     padding: 10px
     border-left: $borderMain
     border-bottom: $borderMain
@@ -41,6 +51,15 @@ $borderMain: 2px solid purple
 
       &:active
         color: blue
+
+    &--sort
+      &-increase::after
+        @extend %sort-custom-icon
+        border-bottom: 8px solid red
+
+      &-decrease
+        @extend %sort-custom-icon
+        border-top: 8px solid red
 
   // &__tbody
   &__td
