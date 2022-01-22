@@ -36,7 +36,6 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
     Condition.More,
     Condition.Less,
   ];
-  // const sortedStatusName: string[] = [SortedName.None, SortedName.Increase, SortedName.Decrease];
 
   const [columnName, setColumnName] = React.useState<ITableColName[]>(colNameData);
   // local table data
