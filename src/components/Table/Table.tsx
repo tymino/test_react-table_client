@@ -1,7 +1,7 @@
 import './style/table.sass';
 import React from 'react';
 import IData from '../../types/data';
-import { ITableColName } from '../App';
+import { ITableColName } from '../../types/IFetchData';
 
 interface ITableProps {
   title: string;
@@ -37,6 +37,7 @@ const Table: React.FC<ITableProps> = ({ title, colNameData, listData }) => {
     Condition.Less,
   ];
 
+  // local column name
   const [columnName, setColumnName] = React.useState<ITableColName[]>(colNameData);
   // local table data
   const [localTableData, setLocalTableData] = React.useState<IData[]>(listData);
