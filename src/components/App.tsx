@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Table from './Table/Table';
 
 import IData from '../types/data';
-import { ITableColName, ITableColNameSQL, IFetchDataSQL, IFetchData } from '../types/IFetchData';
+import { ITableColNameSQL, IFetchDataSQL, IFetchData } from '../types/IFetchData';
 
 const App = () => {
   const [data, setData] = useState<IFetchData>();
